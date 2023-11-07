@@ -1,10 +1,15 @@
+import pandas as pd
+import matplotlib.pyplot as plt
 from pytrends.request import TrendReq
 
-pytrends = TrendReq(hl='en-US', tz=360)
+requests_args = {
+    'headers': {
+        'User-Agent': 'Chrome/108.0.0.0 Safari/537.36'
+    }
+}
 
-# Get trending searches
-trending_searches = pytrends.trending_searches(pn='united_states') 
-
-print("Trending Searches in the United States:")
-for search in trending_searches:
-    print(search)
+pytrends = TrendReq(hl='en-US')
+kw_list = ["Super Mario", "Luigi", "Bowser", "Princess Peach"]
+pytrends.build_payload(kw_list, cat=0, timeframe='2022-01-01 2023-11-06', geo='US', gprop='')
+df = pytrends.interest_over_time()
+print (df.head(10))
