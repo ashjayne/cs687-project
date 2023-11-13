@@ -8,8 +8,9 @@ import Products from './Products';
 import ProductPage from './ProductPage';
 
 function fetchAPI() {
-  axios.get('http://localhost:5000/get_data')
+  axios.get('http://localhost:5000/get_trend_data')
     .then(response => console.log(response.data))
+    .catch(error => console.error('Error fetching data:', error));
 }
 
 class App extends Component {

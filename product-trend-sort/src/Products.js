@@ -1,59 +1,57 @@
-import React, { useEffect, useContext, useState } from 'react';
+import React, { useEffect, useContext, useState, useCallback } from 'react';
 import { ShopContext } from './shopifyContext.js';
 import { Link } from 'react-router-dom';
 
 const Products = () => {
     const { fetchAllProducts, products } = useContext(ShopContext);
     const [sortedProducts, setSortedProducts] = useState([]);
-    const [sortBy, setSortBy] = useState('title'); // Default sorting by title
+    const [typeValues, setTypeValues] = useState({});
+
+    const fetchTypeValues = async () => {
+        try {
+            const response = await fetch('http://localhost:5000/get_trend_data'); // call trend data from API
+            const data = await response.json();
+            setTypeValues(data);
+        } catch (error) {
+            console.error('Error fetching type values:', error);
+        }
+    };
+
+    const sortProducts = useCallback(() => {
+        const sorted = [...products];
+        sorted.sort((a, b) => {
+            const getProductTypeValue = (productType) => {
+                return typeValues[productType] || 0;
+            };
+
+            const aValue = getProductTypeValue(a.productType);
+            const bValue = getProductTypeValue(b.productType);
+
+            return bValue - aValue; // Sort in descending order (from positive to negative values)
+        });
+        setSortedProducts(sorted);
+    }, [products, typeValues]);
 
     useEffect(() => {
         fetchAllProducts();
+        fetchTypeValues();          // Fetch productType values when the component mounts
         return () => {
-            // Clean up
         };
     }, [fetchAllProducts]);
 
-    useEffect(() => {
-        // Whenever the products or sorting criteria change, re-sort the products
+    useEffect(() => {               // Handles re-sorting when products or type values change
         sortProducts();
-    }, [products, sortBy]);
-
-    const sortProducts = () => {
-        const sorted = [...products];
-        sorted.sort((a, b) => {
-            if (sortBy === 'title') {
-                return a.title.localeCompare(b.title);
-            } else if (sortBy === 'price-low-to-high') {
-                return a.variants[0].price.amount - b.variants[0].price.amount;
-            } else if (sortBy === 'price-high-to-low') {
-                return b.variants[0].price.amount - a.variants[0].price.amount;
-            }
-            return 0;
-        });
-        setSortedProducts(sorted);
-    };
-
-    const handleSortChange = (event) => {
-        setSortBy(event.target.value);
-    };
+    }, [products, typeValues, sortProducts]);
 
     return (
         <div className="container">
-            <div>
-                <label>Sort by: </label>
-                <select onChange={handleSortChange} value={sortBy}>
-                    <option value="title">Title</option>
-                    <option value="price-low-to-high">Price: Low to High</option>
-                    <option value="price-high-to-low">Price: High to Low</option>
-                </select>
-            </div>
             {sortedProducts.map((product) => (
                 <Link to={`/products/${product.handle}`} key={product.id}>
                     <div className="productContainer">
                         <h1 className="productName">{product.title}</h1>
                         <img src={product.images[0].src} alt="Product" className="img" />
                         <p className="productPrice">${product.variants[0].price.amount}</p>
+                        <p>Type: {product.productType}</p>
                         <button className="button">Purchase</button>
                     </div>
                 </Link>
