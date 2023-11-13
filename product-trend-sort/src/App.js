@@ -1,12 +1,22 @@
 import React, { Component } from 'react';
 import { Link, BrowserRouter, Routes, Route } from 'react-router-dom';
 import './App.css';
+import axios from 'axios';
 
 import Home from './Home';
 import Products from './Products';
 import ProductPage from './ProductPage';
 
+function fetchAPI() {
+  axios.get('http://localhost:5000/get_data')
+    .then(response => console.log(response.data))
+}
+
 class App extends Component {
+  componentDidMount() {
+    fetchAPI();
+  }
+
   render() {
     return (
       <BrowserRouter>
