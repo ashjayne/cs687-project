@@ -14,8 +14,8 @@ CORS(app, resources={r"/*": {"origins": "*"}})
 @app.route('/get_trend_data', methods=['GET'])
 def get_trend_data():
     pytrends = TrendReq(hl='en-US')
-    kw_list = ["Super Mario", "Pikmin", "Splatoon", "The Legend of Zelda"] # create list of keywords
-    pytrends.build_payload(kw_list, cat=0, timeframe='2023-11-01 2023-11-13', geo='US', gprop='') # can change timeframe as needed
+    kw_list = ["Super Mario", "Pikmin", "Splatoon", "Legend of Zelda"] # create list of keywords
+    pytrends.build_payload(kw_list, cat=0, timeframe='2023-11-05 2023-11-19', geo='US', gprop='') # can change timeframe as needed
 
     df = pytrends.interest_over_time()
     df = df.drop(columns=["isPartial"]) # drops isPartial column

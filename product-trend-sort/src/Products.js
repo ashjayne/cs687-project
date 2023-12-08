@@ -51,7 +51,6 @@ const Products = () => {
                         <h1 className="productName">{product.title}</h1>
                         <img src={product.images[0].src} alt="Product" className="img" />
                         <p className="productPrice">${product.variants[0].price.amount}</p>
-                        <p>Type: {product.productType}</p>
                         <button className="button">Purchase</button>
                     </div>
                 </Link>
